@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="fd8ce51b-b8d0-4e30-b48c-be25126a25e4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mockmock/MockMock.jar" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +32,11 @@
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="B:\HEIG\BA3\DAI\LABOS\LABO04_DAI" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -43,6 +49,7 @@
       <workItem from="1668077392821" duration="402000" />
       <workItem from="1668530645861" duration="781000" />
       <workItem from="1668601824893" duration="43000" />
+      <workItem from="1669213258039" duration="1456000" />
     </task>
     <servers />
   </component>

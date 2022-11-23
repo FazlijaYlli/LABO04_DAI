@@ -1,0 +1,1 @@
+docker rm $(docker stop 0 $(docker ps -a -q --filter ancestor=mockmock-server))

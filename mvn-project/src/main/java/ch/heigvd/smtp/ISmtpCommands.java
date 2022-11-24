@@ -1,5 +1,7 @@
 package ch.heigvd.smtp;
 
+// TODO : Demander si ça vaut la peine de faire comme ceci.
+
 public interface ISmtpCommands {
     String EHLO = "EHLO ";
     String MAIL_FROM = "MAIL FROM:";

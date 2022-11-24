@@ -2,28 +2,20 @@ package ch.heigvd.util;
 
 import java.util.Collections;
 import java.util.List;
+
 import ch.heigvd.config.Configurator;
 
+// Sert à stocker une liste de personnes, un envoyeur et un id.
+// Permets de savoir qui doit envoyer un mail et à qui.
 public class Group {
-    private int id;
+    private final int id;
+    private final List<Person> receivers;
+
     private Person sender;
-    private List<Person> receivers;
 
     public Group(int id, List<Person> receivers) {
         this.id = id;
         this.receivers = receivers;
-    }
-
-    public Person getSender() {
-        return sender;
-    }
-
-    public List<Person> getReceivers() {
-        return receivers;
-    }
-
-    public void add(Person p) {
-        receivers.add(p);
     }
 
     public void chooseSender() {
@@ -34,6 +26,14 @@ public class Group {
         Collections.shuffle(this.receivers);
         this.sender = this.receivers.get(0);
         this.receivers.remove(0);
+    }
+
+    public Person getSender() {
+        return sender;
+    }
+
+    public List<Person> getReceivers() {
+        return receivers;
     }
 
     public String toString() {

@@ -33,6 +33,7 @@ public class SmtpClient {
         this.serverPort = port;
     }
 
+    // Permets de logger and vérifier que chaque ligne fut acceptée par le serveur.
     private void check() throws IOException {
         buf = r.readLine();
         if (!buf.startsWith("250")) {
@@ -41,6 +42,8 @@ public class SmtpClient {
         LOGGER.info(buf);
     }
 
+    // Permets d'envoyer une chaîne de caractères au serveur.
+    // Si check == true, on demande de flush le buffer et vérifier que le serveur valide la ligne.
     private void send(String s, boolean check) throws IOException {
         w.write(s + ENDL);
         if (check) {
@@ -49,6 +52,7 @@ public class SmtpClient {
         }
     }
 
+    // Permets d'envoyer un mail complet au serveur SMTP.
     public void send(Mail m) throws IOException {
         LOGGER.info("Creating socket to connect to server...");
         Socket socket = new Socket(serverAddress, serverPort);

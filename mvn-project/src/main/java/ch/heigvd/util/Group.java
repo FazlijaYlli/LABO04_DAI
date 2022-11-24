@@ -5,10 +5,12 @@ import java.util.List;
 import ch.heigvd.config.Configurator;
 
 public class Group {
+    private int id;
     private Person sender;
     private List<Person> receivers;
 
-    public Group(List<Person> receivers) {
+    public Group(int id, List<Person> receivers) {
+        this.id = id;
         this.receivers = receivers;
     }
 
@@ -32,5 +34,15 @@ public class Group {
         Collections.shuffle(this.receivers);
         this.sender = this.receivers.get(0);
         this.receivers.remove(0);
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("GROUPE ").append(id).append("\nSENDER : ").append(sender.getAddress()).append("\n");
+        for(Person p : receivers) {
+            sb.append(p.getAddress()).append(", ");
+        }
+        sb.append("\n");
+        return sb.toString();
     }
 }

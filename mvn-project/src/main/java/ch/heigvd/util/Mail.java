@@ -5,11 +5,11 @@ import java.util.List;
 public class Mail {
     private final String subject;
     private final String content;
-    private final String from;
-    private final List<String> to;
-    private final String cc;
+    private final Person from;
+    private final List<Person> to;
+    private final Person cc;
 
-    public Mail(String subject, String content, String from, List<String> to, String cc) {
+    public Mail(String subject, String content, Person from, List<Person> to, Person cc) {
         this.subject = subject;
         this.content = content;
         this.from = from;
@@ -25,15 +25,27 @@ public class Mail {
         return content;
     }
 
-    public String getFrom() {
+    public Person getFrom() {
         return from;
     }
 
-    public List<String> getTo() {
+    public List<Person> getTo() {
         return to;
     }
 
-    public String getCc() {
+    public Person getCc() {
         return cc;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nSENDER : ").append(from);
+        sb.append("\nTO : ");
+        for(Person p : to) {
+            sb.append(p).append(", ");
+        }
+        sb.append("\nSUBJECT : ").append(subject);
+        sb.append("\nCONTENT : ").append(content);
+        return sb.toString();
     }
 }

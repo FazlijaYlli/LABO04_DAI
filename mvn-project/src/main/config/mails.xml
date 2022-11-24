@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<mails>
+    <mail>
+        <subject>MAIL TEST</subject>
+        <content>TEST D'ENVOI DE MAIL. MESSAGE UNIQUEMENT ECRIT EN MAJUSCULE SANS ACCENTS NI CARACTERES SPECIAUX NI RETOURS A LA LIGNE.</content>
+    </mail>
+    <mail>
+        <subject>Caractères spéciaux !</subject>
+        <content>Voici un message écrit avec caractères spéciaux et retour à la ligne !
+            Cette ligne devrait être écrite sur une nouvelle ligne :)
+        </content>
+    </mail>
+    <mail>
+        <subject>CLIQUEZ ICI POUR GAGNER 1E+06 MILLIONS DE CHF</subject>
+        <content>Bravo !
+            Vous avez gagné la loterie "Dynamic Applied Insta-money" (DAI).
+            Veuillez cliquer sur ce lien pour être RICHE
+        </content>
+    </mail>
+    <mail>
+        <subject>On m'appelle l'OVNI</subject>
+        <content>C'est JUL.
+            Ils ne m'ont pas encore trouvé. Il y encore du temps.
+            On se retrouve au quartier vert, proche de l'arbre habituel.
+            Amène l'entité et tout ira bien pour toi.
+            J'espère que tu sauras remplir ta part du marché pour le bien de tous.
+        </content>
+    </mail>
+</mails>

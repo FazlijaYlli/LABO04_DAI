@@ -7,6 +7,7 @@ import java.util.Base64;
 import java.util.logging.Logger;
 
 import ch.heigvd.util.Mail;
+import ch.heigvd.util.Person;
 
 // Permets de se connecter au serveur SMTP avec les arguments du constructeur.
 public class SmtpClient {
@@ -37,6 +38,7 @@ public class SmtpClient {
         if (!buf.startsWith("250")) {
             throw new IOException("SMTP server did not return a success : " + buf);
         }
+        LOGGER.info(buf);
     }
 
     private void send(String s, boolean check) throws IOException {
@@ -48,6 +50,7 @@ public class SmtpClient {
     }
 
     public void send(Mail m) throws IOException {
+        LOGGER.info("Creating socket to connect to server...");
         Socket socket = new Socket(serverAddress, serverPort);
         w = new BufferedWriter(
                 new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
@@ -63,7 +66,7 @@ public class SmtpClient {
         send(ISmtpCommands.MAIL_FROM + m.getFrom(), true);
 
         // Writing all the receivers in one mail
-        for (String to : m.getTo()) {
+        for (Person to : m.getTo()) {
             send(ISmtpCommands.RCPT_TO + to, true);
         }
 

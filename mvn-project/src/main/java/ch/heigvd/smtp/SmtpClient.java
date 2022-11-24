@@ -7,18 +7,26 @@ import java.util.Base64;
 import java.util.logging.Logger;
 
 import ch.heigvd.util.Mail;
-import ch.heigvd.smtp.ISmtpCommands;
 
+// Permets de se connecter au serveur SMTP avec les arguments du constructeur.
 public class SmtpClient {
+    // Objet logger nous permettant de lire les retours du serveur depuis notre application client.
     private static final Logger LOGGER = Logger.getLogger(SmtpClient.class.getName());
-    private static final String END = "\r\n";
+    // Les lignes envoyées au serveur SMTP doivent être <CR><LF>.
+    private static final String ENDL = "\r\n";
+    // Adresse IP du serveur SMTP.
     private final String serverAddress;
+    // Port que le serveur SMTP utilise.
     private final int serverPort;
 
+    // w et r seront nos writers en readers utilisés lors d'écriture dans les sockets.
     private BufferedWriter w;
     private BufferedReader r;
+
+    // String dans laquelle nous stockerons la ligne lue depuis le serveur, une à la fois.
     private String buf;
 
+    // Constructeur de la classe, prend l'adresse IP et le port du serveur SMTP.
     public SmtpClient(String address, int port) {
         this.serverAddress = address;
         this.serverPort = port;
@@ -32,7 +40,7 @@ public class SmtpClient {
     }
 
     private void send(String s, boolean check) throws IOException {
-        w.write(s + END);
+        w.write(s + ENDL);
         if (check) {
             w.flush();
             check();
@@ -64,32 +72,34 @@ public class SmtpClient {
 
         // Header of content section
         send(ISmtpCommands.DATA, true);
-        send(ISmtpCommands.CONTENT_TYPE + END, false);
-        send(ISmtpCommands.FROM + m.getFrom() + END, false);
-        send(ISmtpCommands.TO + m.getTo().get(0) + END, false);
+        send(ISmtpCommands.CONTENT_TYPE, false);
+        send(ISmtpCommands.FROM + m.getFrom(), false);
+
+        w.write(ISmtpCommands.TO + m.getTo().get(0));
         for (int i = 1; i < m.getTo().size(); ++i) {
-            send(", " + m.getTo().get(i), false);
+            w.write(", " + m.getTo().get(i));
         }
-        send(END, false);
+        w.write(ENDL);
 
         // Section empruntée du site web dont le lien est sur le github du labo.
         send(ISmtpCommands.SUBJECT_UTF8 +
                 Base64.getEncoder().encodeToString(m.getSubject().getBytes()) +
-                "?=" + END, false);
-        send(ISmtpCommands.SUBJECT + m.getSubject() + END, false);
-        send(END, false);
+                "?=", false);
+        send(ISmtpCommands.SUBJECT + m.getSubject(), false);
+
+        w.write(ENDL);
         w.flush();
         // Fin de section empruntée.
 
         // Content section
-        send(m.getContent() + END, false);
+        send(m.getContent() + ENDL, false);
         send(".",true);
 
         buf = r.readLine();
         LOGGER.info(buf);
 
         // Quitting the server
-        send(ISmtpCommands.QUIT, false);
+        send(ISmtpCommands.QUIT, true);
         r.close();
         w.close();
         socket.close();

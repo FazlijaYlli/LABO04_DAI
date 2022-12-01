@@ -13,17 +13,19 @@
     <mail>
         <subject>CLIQUEZ ICI POUR GAGNER 1E+06 MILLIONS DE CHF</subject>
         <content>Bravo !
-            Vous avez gagné la loterie "Dynamic Applied Insta-money" (DAI).
+            Vous avez gagné la loterie "Dynamic Applied Instamoney" (DAI).
             Veuillez cliquer sur ce lien pour être RICHE
         </content>
     </mail>
     <mail>
-        <subject>On m'appelle l'OVNI</subject>
-        <content>C'est JUL.
-            Ils ne m'ont pas encore trouvé. Il y encore du temps.
-            On se retrouve au quartier vert, proche de l'arbre habituel.
-            Amène l'entité et tout ira bien pour toi.
-            J'espère que tu sauras remplir ta part du marché pour le bien de tous.
+        <subject>Superbe émoji</subject>
+        <content>Voici le meilleur émoji (╯°□°）╯︵ ┻━┻
+        </content>
+    </mail>
+    <mail>
+        <subject>Assurance maladie arrivée à Malibou !</subject>
+        <content>Profitez dès maintenant d'une rupture du tibia en exclusivité à Malibou !
+            Ne ratez pas votre chance ! La fraude à l'assurance est super et très légal !
         </content>
     </mail>
 </mails>

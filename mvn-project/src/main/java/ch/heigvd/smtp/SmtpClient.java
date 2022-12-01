@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ch.heigvd.util.Mail;
@@ -39,7 +40,7 @@ public class SmtpClient {
         if (!buf.startsWith("250")) {
             throw new IOException("SMTP server did not return a success : " + buf);
         }
-        LOGGER.info(buf);
+        logInfo(buf);
     }
 
     // Permets d'envoyer une chaîne de caractères au serveur.
@@ -54,14 +55,14 @@ public class SmtpClient {
 
     // Permets d'envoyer un mail complet au serveur SMTP.
     public void send(Mail m) throws IOException {
-        LOGGER.info("Creating socket to connect to server...");
+        logInfo("Creating socket to connect to server...");
         Socket socket = new Socket(serverAddress, serverPort);
         w = new BufferedWriter(
                 new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
         r = new BufferedReader(
                 new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         buf = r.readLine();
-        LOGGER.info(buf);
+        logInfo(buf);
 
         // Introducing ourselves to the server
         send(ISmtpCommands.EHLO + serverAddress, true);
@@ -88,6 +89,8 @@ public class SmtpClient {
         }
         w.write(ENDL);
 
+        send(ISmtpCommands.CC + m.getCc(), false);
+
         // Section empruntée du site web dont le lien est sur le github du labo.
         send(ISmtpCommands.SUBJECT_UTF8 +
                 Base64.getEncoder().encodeToString(m.getSubject().getBytes()) +
@@ -103,12 +106,16 @@ public class SmtpClient {
         send(".",true);
 
         buf = r.readLine();
-        LOGGER.info(buf);
+        logInfo(buf);
 
         // Quitting the server
         send(ISmtpCommands.QUIT, true);
         r.close();
         w.close();
         socket.close();
+    }
+
+    private void logInfo(String s) {
+        LOGGER.log(Level.INFO,"\u001B[34m" + s + "\u001B[0m");
     }
 }

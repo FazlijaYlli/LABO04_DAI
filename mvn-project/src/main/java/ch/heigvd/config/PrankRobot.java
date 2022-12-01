@@ -1,5 +1,6 @@
 package ch.heigvd.config;
 
+import ch.heigvd.smtp.SmtpClient;
 import ch.heigvd.util.Mail;
 import ch.heigvd.util.Person;
 import ch.heigvd.util.Group;
@@ -18,15 +19,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import static java.lang.Integer.parseInt;
 
+
 // Permets d'accéder aux fichiers de configurations et créer les différents groupes et mails
 // demandées par le cahier des charges.
-public class Configurator {
+public class PrankRobot {
     // Taille d'un groupe minimum.
     public static int MIN_GROUP_SIZE = 3;
 
+    // Objet logger nous permettant de lire les retours du serveur depuis notre application client.
+    private static final Logger LOGGER = Logger.getLogger(PrankRobot.class.getName());
+    private static final String emailValidationRegex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(.[A-Za-z0-9-]+)*(.[A-Za-z]{2,})$";
     // Variables à configurer.
     private int nbGroups;
     private String serverAdress;
@@ -37,7 +46,12 @@ public class Configurator {
     private List<Mail> mails;
 
     // Quand le configurator est créé, il lit les fichiers de configurations et crée les objets adéquats.
-    public Configurator() throws Exception {
+    public PrankRobot() throws Exception {
+        LOGGER.log(Level.INFO, "\n" + """
+                ===============================================
+                |          PRANKROBOT STARTING...             |
+                ===============================================
+                """);
         updateSettings(".\\src\\main\\config\\settings.properties");
         updateProfiles(".\\src\\main\\config\\profiles.xml");
         updateMails(".\\src\\main\\config\\mails.xml");
@@ -55,6 +69,9 @@ public class Configurator {
         serverPort = parseInt(p.getProperty("serverPort"));
         carbonTarget = new Person(p.getProperty("carbonTarget"));
         nbGroups = parseInt(p.getProperty("nbGroups"));
+        if (!(Pattern.compile(emailValidationRegex).matcher(carbonTarget.getAddress()).matches())) {
+            throw new RuntimeException("Addresse <"+carbonTarget+"> de copie carbone est erronée !");
+        }
     }
 
     private void updateProfiles(String path) throws ParserConfigurationException, IOException, SAXException {
@@ -68,30 +85,43 @@ public class Configurator {
         groups = new ArrayList<>();
 
         // On itère sur le nombre de groupe
-        NodeList people = doc.getElementsByTagName("person");
+        NodeList nodes_addresses = doc.getElementsByTagName("address");
+
+        if(nodes_addresses.getLength() < 3) {
+            throw new RuntimeException("Il n'y a pas assez de personnes pour créer des groupes !");
+        }
+
+        ArrayList<String> addresses = new ArrayList<>();
+
+        for (int i = 0; i < nodes_addresses.getLength(); i++) {
+            String a = nodes_addresses.item(i).getTextContent();
+            if (Pattern.compile(emailValidationRegex).matcher(a).matches()) {
+                addresses.add(a);
+            } else {
+                LOGGER.log(Level.WARNING,"\u001B[33m" + "Addresse <" + a + "> n'est pas une adresse e-mail valide !" + "\u001B[0m");
+            }
+        }
+        
         for (int i = 0; i < nbGroups; i++) {
 
             // On ajoute un groupe par itération dans la liste des groupes.
             List<Person> l = new ArrayList<>();
             groups.add(new Group(i,l));
+            
+            // On ajoute 1 pour obtenir les valeurs corectes avec nextInt car max exclusif.
+            int randGroupSize = ThreadLocalRandom.current().nextInt(3, addresses.size() + 1);
 
-            //  Itération sur le nombre de personnes
-            for (int j = 0 ; j < people.getLength() ; ++j) {
+            //  Itération sur le nombre de personnes aléatoire
+            List<Integer> usedIds = new ArrayList<>();
+            for (int j = 0 ; j < randGroupSize ; ++j) {
+                int randPerson;
+                do {
+                    randPerson = ThreadLocalRandom.current().nextInt(0, addresses.size());
+                } while (usedIds.contains(randPerson));
 
-                Node n = people.item(j);
-                if (n.getNodeType() == Node.ELEMENT_NODE) {
-
-                    // Ajout de chaque personne au groupe correspond si et seulement s'il possède un id correspondant
-                    // à l'id du groupe qui itère actuellement.
-                    Element e = (Element) n;
-                    Person p = new Person(e.getElementsByTagName("address").item(0).getTextContent());
-
-                    for (int k = 0 ; k < e.getElementsByTagName("group").getLength() ; ++k) {
-                        if (parseInt(e.getElementsByTagName("group").item(k).getTextContent()) == i) {
-                            groups.get(i).getReceivers().add(p);
-                        }
-                    }
-                }
+                usedIds.add(randPerson);
+                Person p = new Person(addresses.get(randPerson));
+                groups.get(i).getReceivers().add(p);
             }
             // On choisit le sender du groupe.
             groups.get(i).chooseSender();
@@ -111,18 +141,37 @@ public class Configurator {
 
         // On itère sur les groupes
         for (int i = 0; i < nbGroups; i++) {
-            // Puis on itère sur le nombre de mails dans le fichier mails.xml
-            for (int j = 0 ; j < mail_nodes.getLength() ; ++j) {
+            int randNbMailToSend = ThreadLocalRandom.current().nextInt(1, mail_nodes.getLength() + 1);
+
+            //  Itération sur le nombre de personnes
+            List<Integer> usedMails = new ArrayList<>();
+            for (int j = 0 ; j < randNbMailToSend ; ++j) {
+
+                int randMail;
+                do {
+                    randMail = ThreadLocalRandom.current().nextInt(0, mail_nodes.getLength());
+                } while (usedMails.contains(randMail));
+                usedMails.add(randMail);
+
                 // On séléctionne le contenu de chaque mail
-                Node n = mail_nodes.item(j);
+                Node n = mail_nodes.item(randMail);
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
                     // On crée un mail avec les éléments contenus dans le fichier et on l'ajoute à la liste
                     // des mails du configurator.
                     Element e = (Element) n;
                     String subject = e.getElementsByTagName("subject").item(0).getTextContent();
                     String content = e.getElementsByTagName("content").item(0).getTextContent();
-                    mails.add(new Mail(subject, content, groups.get(i).getSender(), groups.get(i).getReceivers(), carbonTarget));
+                    groups.get(i).getMailstoSend().add(new Mail(subject, content, groups.get(i).getSender(), groups.get(i).getReceivers(), carbonTarget));
                 }
+            }
+        }
+    }
+
+    public void prank() throws IOException {
+        SmtpClient client = new SmtpClient(getServerAdress(), getServerPort());
+        for(Group g : groups) {
+            for(Mail m : g.getMailstoSend()) {
+                client.send(m);
             }
         }
     }

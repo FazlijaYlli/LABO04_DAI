@@ -52,9 +52,9 @@ public class PrankRobot {
                 |          PRANKROBOT STARTING...             |
                 ===============================================
                 """);
-        updateSettings(".\\src\\main\\config\\settings.properties");
-        updateProfiles(".\\src\\main\\config\\profiles.xml");
-        updateMails(".\\src\\main\\config\\mails.xml");
+        updateSettings("..\\src\\main\\config\\settings.properties");
+        updateProfiles("..\\src\\main\\config\\profiles.xml");
+        updateMails("..\\src\\main\\config\\mails.xml");
     }
 
     // Va chercher les paramètres dans un fichier "properties".
@@ -69,6 +69,9 @@ public class PrankRobot {
         serverPort = parseInt(p.getProperty("serverPort"));
         carbonTarget = new Person(p.getProperty("carbonTarget"));
         nbGroups = parseInt(p.getProperty("nbGroups"));
+        if(nbGroups <= 0) {
+            throw new RuntimeException("Nombre de groupes erronées !");
+        }
         if (!(Pattern.compile(emailValidationRegex).matcher(carbonTarget.getAddress()).matches())) {
             throw new RuntimeException("Addresse <"+carbonTarget+"> de copie carbone est erronée !");
         }

@@ -82,7 +82,6 @@ public class SmtpClient {
         send(ISmtpCommands.DATA, true);
         send(ISmtpCommands.CONTENT_TYPE, false);
         send(ISmtpCommands.FROM + m.getFrom(), false);
-
         w.write(ISmtpCommands.TO + m.getTo().get(0));
         for (int i = 1; i < m.getTo().size(); ++i) {
             w.write(", " + m.getTo().get(i));
@@ -96,14 +95,10 @@ public class SmtpClient {
                 Base64.getEncoder().encodeToString(m.getSubject().getBytes()) +
                 "?=", false);
         send(ISmtpCommands.SUBJECT + m.getSubject(), false);
-
-        w.write(ENDL);
-        w.flush();
         // Fin de section empruntée.
 
         // Content section
-        send(m.getContent() + ENDL, false);
-        send(".",true);
+        send(m.getContent() + ENDL+"."+ENDL, true);
 
         buf = r.readLine();
         logInfo(buf);

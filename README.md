@@ -14,7 +14,7 @@ then inside the `main.config` are the configuration files, which we will conver 
 MockMock is a very simple Java implemetation of an SMTP server. When launched, it opens an SMTP server on port 25 and also an http graphical interface on the port 8282 which allows for consultation of the mails received on the server. We used Docker to run this MockMock server and we also tested the features of our bot on it.
 
 ## **How to use our PrankBot ?** 🤖
-### Setting up docker
+### Setting up docker 🐳
 To use our bot, you first need to build a docker image containing the MockMock server.
 #### *Step 1 : Run Docker desktop*
 Docker needs to be running for these next steps to work !
@@ -26,7 +26,7 @@ This script will execute the necessary commands to build the mockmock image for 
 #### *Step 4 : Run the `start-image.sh` script*
 This script will tell Docker to use the newly created image to create a container and start it. After this script has been executed, a console will be opened and stay open until the docker image is closed. Once the console tells you that the HTTP server is running on port 8282, you can go to http://localhost:8282 and you should see the MockMock interface.
 
-### Using the program
+### Using the program 💾
 #### Step 1 : Customize the behiaviour using the config files
 Go into the root folder, then `src/main/config/`. Here you will find `mails.xml`, `profiles.xml` and `settings.properties`.
 
@@ -43,3 +43,17 @@ This should launch our program and send the correct e-mails from the mails file 
 
 ### Stopping docker
 Simply run the `stop-image.sh` script in the `mockmock` folder and the mockmock container should stop.
+
+## **What are the main classes and what do they do ?** 🎄
+### Main classes
+#### *PrankRobot*
+The PrankRobot class is the main class used in the program. It uses many other classes. The main objective is to prepare all the elements needed to do the prank, like the different groups, the carbon It has the "prank" method which is used in the main program to launch the prank. `updateSettings` is used to get all the necessary informations from the properties file. `updateProfiles` create all the necessary groups from the profiles file and finally `updateMails` is used to get all mails from the mails file and assign them randomly to the groups. These functions are called at creation of the PrankRobot object. All that is left to do is to call the prank function to send everything to the smtp server.
+#### *SmtpClient*
+This class is used by the prank robot to send mails. It instanciates one and when the prank starts and uses it to send multiple mails. The client has a send function that when can send info to the server like commands and also a send function that takes a Mail object used to send mails to the SMTP server.
+### Smaller classes
+#### *Group*
+This class is used to create groups that contains a list of receivers, a sender and a collection of mails to send.
+#### *Person*
+This class represents a person. For now, the only attribute they have is their mail address but with XML used a save data it could be really easy to expand this class to be a bit more complete.
+#### *Mail*
+This class is used to create a entire sendable mail using the SmtpClient class. It contains a cc, receivers, sender, subject and content. It has all necessary getters too.
